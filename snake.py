@@ -13,10 +13,13 @@ class Snake:
         head.changeType(enums.SquareType.BODY)
         self.direction = UP
         self.nextDirection = UP
+        self.score = 1
 
     def move(self, nextBody):
         if nextBody.type != enums.SquareType.FRUIT:
             self.bodyParts.popleft().changeType(enums.SquareType.BACKGROUND)
+        else:
+            self.score += 1
         self.bodyParts.append(nextBody)
         nextBody.changeType(enums.SquareType.BODY)
 
