@@ -9,6 +9,7 @@ screenSize = 25*20 + 200, 25*20
 black = 0, 0, 0
 white = 255, 255, 255
 SNAKEMOVE = pygame.USEREVENT + 1
+WIN = pygame.USEREVENT + 2
 
 def findNextSquare():
     x, y = snake.bodyParts[-1].cords
@@ -35,6 +36,7 @@ map.randomFruit()
 scoreText = font.render("Score: 0", 1, white)
 speedText = font.render("Speed: 300", 1, white)
 pygame.time.set_timer(SNAKEMOVE, 300)
+gameEnded = False
 
 while True:
     for event in pygame.event.get():
@@ -45,10 +47,11 @@ while True:
             elif event.key == pygame.K_s: snake.changeDirection(enums.Direction.DOWN)
             elif event.key == pygame.K_d: snake.changeDirection(enums.Direction.RIGHT)
             elif event.key == pygame.K_ESCAPE: sys.exit()
-        if event.type == SNAKEMOVE:
+        if event.type == SNAKEMOVE and gameEnded == False:
             nextSquare = findNextSquare()
-            if nextSquare == None:
-                print("LOST")
+            if nextSquare == None or nextSquare.type == enums.SquareType.BODY:
+                resultText = font.render("LOST", 1, white)
+                gameEnded = True
                 break
             if nextSquare.type == enums.SquareType.FRUIT:
                 map.randomFruit()
@@ -57,6 +60,10 @@ while True:
                     newSpeed = int(300 - snake.score/5 * 2)
                     pygame.time.set_timer(SNAKEMOVE, newSpeed)
                     speedText = font.render("Speed: " + str(newSpeed), 1, white)
+                if(snake.score == enums.mapSize * enums.mapSize):
+                    resultText = font.render("WIN!", 1, white)
+                    gameEnded = True
+
             snake.move(nextSquare)
     
     screen.fill(black)
@@ -64,8 +71,8 @@ while True:
         screen.blit(square.img, square.pos)
     screen.blit(scoreText, (25*20+20, 0))
     screen.blit(speedText, (25*20+20, 30))
+    if gameEnded:
+        screen.blit(resultText, (25*20+20, 60))
     pygame.display.flip()
 
-#x = Map()
-#print(x.squares)
 
